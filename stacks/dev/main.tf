@@ -84,56 +84,9 @@ module "vnet" {
       name                      = "subnet-linux-container"
       address_prefixes          = ["10.0.2.0/24"]
       network_security_group_id = module.nsg_linux_container.id
-    },
-    {
-      name             = "AzureBastionSubnet"
-      address_prefixes = ["10.0.3.0/24"]
-    },
-    {
-      name             = "AzureFirewallSubnet"
-      address_prefixes = ["10.0.4.0/24"]
     }
   ]
 }
-
-module "bastion" {
-  source              = "../../modules/bastion"
-  name                = "bastion-host"
-  location            = var.location
-  resource_group_name = module.resource_group.name
-  vnet_subnet_id      = module.vnet.subnet_ids["AzureBastionSubnet"]
-  public_ip_name      = "bastion-pip"
-  tags                = { environment = "dev" }
-}
-
-module "firewall" {
-  source              = "../../modules/firewall"
-  name                = "firewall"
-  location            = var.location
-  resource_group_name = module.resource_group.name
-  vnet_subnet_id      = module.vnet.subnet_ids["AzureFirewallSubnet"]
-  public_ip_name      = "firewall-pip"
-  tags                = { environment = "dev" }
-}
-
-resource "azurerm_route_table" "dev_route_table" {
-  name                = "dev-route-table"
-  location            = var.location
-  resource_group_name = module.resource_group.name
-
-  route {
-    name                   = "firewall-route"
-    address_prefix         = "0.0.0.0/0"
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = module.azure_firewall.firewall_private_ip
-  }
-}
-
-resource "azurerm_subnet_route_table_association" "dev_association" {
-  subnet_id      = module.vnet.subnet_ids["subnet-dev-systems"]
-  route_table_id = azurerm_route_table.dev_route_table.id
-}
-
 
 
 module "windows_vms" {
