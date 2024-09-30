@@ -47,6 +47,28 @@ module "nsg_dev_systems" {
   ]
 }
 
+module "bastion" {
+  source              = "../../modules/bastion"
+  name                = "bastion-dev"
+  location            = var.location
+  resource_group_name = module.resource_group.name
+  vnet_name           = module.vnet.name
+  public_ip_name      = "pip-bastion-dev"
+  tags                = { environment = "dev" }
+}
+
+output "bastion_host_name" {
+  description = "Name of the Bastion host"
+  value       = module.bastion.bastion_host_name
+}
+
+output "bastion_public_ip" {
+  description = "Public IP of the Bastion host"
+  value       = module.bastion.bastion_public_ip 
+}
+
+
+
 module "nsg_linux_container" {
   source              = "../../modules/network_security_group"
   name                = "nsg-linux-container"
@@ -102,7 +124,7 @@ module "windows_vms" {
   os_type             = "Windows"
   admin_username      = var.admin_username
   admin_password      = var.admin_password
-  instance_count      = 4
+  instance_count      = 1
   create_public_ip    = true
   tags                = { environment = "dev" }
 }

@@ -6,6 +6,13 @@ resource "azurerm_public_ip" "this" {
   sku                 = "Standard"
 }
 
+resource "azurerm_subnet" "bastion" {
+  name                 = "AzureBastionSubnet"  # This name is required
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = var.vnet_name
+  address_prefixes     = ["10.0.3.0/27"]       # Adjust the address space as needed
+}
+
 resource "azurerm_bastion_host" "this" {
   name                = var.name
   location            = var.location
@@ -13,7 +20,7 @@ resource "azurerm_bastion_host" "this" {
 
   ip_configuration {
     name                 = "configuration"
-    subnet_id            = var.vnet_subnet_id
+    subnet_id            = azurerm_subnet.bastion.id
     public_ip_address_id = azurerm_public_ip.this.id
   }
 

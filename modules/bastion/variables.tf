@@ -1,20 +1,20 @@
 variable "name" {
-  description = "Name of the Azure Bastion host"
+  description = "Name of the Bastion host"
   type        = string
 }
 
 variable "location" {
-  description = "Azure region"
+  description = "Azure location"
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "Resource group name"
+  description = "Name of the resource group"
   type        = string
 }
 
-variable "vnet_subnet_id" {
-  description = "ID of the AzureBastionSubnet"
+variable "vnet_name" {
+  description = "Name of the virtual network"
   type        = string
 }
 
