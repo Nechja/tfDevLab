@@ -124,8 +124,8 @@ module "windows_vms" {
   os_type             = "Windows"
   admin_username      = var.admin_username
   admin_password      = var.admin_password
-  instance_count      = 1
-  create_public_ip    = true
+  instance_count      = 2
+  create_public_ip    = false
   tags                = { environment = "dev" }
 }
 
