@@ -1,4 +1,3 @@
-
 module "resource_group" {
   source   = "../../modules/resource_group"
   name     = "rg-dev-lab"
@@ -34,7 +33,7 @@ module "nsg_dev_systems" {
       destination_address_prefix = "*"
     },
     {
-      name                       = "Allow-Linux-Container-To-Dev"
+      name                       = "Linux-To-Dev"
       priority                   = 1020
       direction                  = "Inbound"
       access                     = "Allow"
@@ -47,27 +46,14 @@ module "nsg_dev_systems" {
   ]
 }
 
-module "bastion" {
-  source              = "../../modules/bastion"
-  name                = "bastion-dev"
-  location            = var.location
-  resource_group_name = module.resource_group.name
-  vnet_name           = module.vnet.name
-  public_ip_name      = "pip-bastion-dev"
-  tags                = { environment = "dev" }
-}
-
-
-
-
-module "nsg_linux_container" {
+module "nsg_linux_system" {
   source              = "../../modules/network_security_group"
   name                = "nsg-linux-container"
   location            = var.location
   resource_group_name = module.resource_group.name
   security_rules = [
     {
-      name                       = "Allow-Dev-To-Linux-Container"
+      name                       = "Dev-To-Linux"
       priority                   = 1000
       direction                  = "Inbound"
       access                     = "Allow"
@@ -94,13 +80,12 @@ module "vnet" {
       network_security_group_id = module.nsg_dev_systems.id
     },
     {
-      name                      = "subnet-linux-container"
+      name                      = "subnet-linux-system"
       address_prefixes          = ["10.0.2.0/24"]
-      network_security_group_id = module.nsg_linux_container.id
+      network_security_group_id = module.nsg_linux_system.id
     }
   ]
 }
-
 
 module "windows_vms" {
   source              = "../../modules/virtual_machine"
@@ -116,7 +101,7 @@ module "windows_vms" {
   admin_username      = var.admin_username
   admin_password      = var.admin_password
   instance_count      = 2
-  create_public_ip    = false
+  create_public_ip    = true
   tags                = { environment = "dev" }
 }
 
@@ -125,7 +110,7 @@ module "linux_vm" {
   vm_name             = "linux-dev"
   location            = var.location
   resource_group_name = module.resource_group.name
-  subnet_id           = module.vnet.subnet_ids["subnet-linux-container"]
+  subnet_id           = module.vnet.subnet_ids["subnet-linux-system"]
   vm_size             = "Standard_B2s"
   publisher           = "Canonical"
   offer               = "0001-com-ubuntu-server-focal"
@@ -134,28 +119,6 @@ module "linux_vm" {
   admin_username      = var.admin_username
   admin_password      = var.admin_password
   instance_count      = 1
-  create_public_ip    = false
+  create_public_ip    = true
   tags                = { environment = "dev" }
 }
-
-
-module "container" {
-  source              = "../../modules/container"
-  name                = "dev-container-group"
-  container_name      = "loafsprong"
-  image               = "bansidhe/loafsprong:latest"
-  cpu                 = 1
-  memory              = 1.5
-  port                = 80
-  location            = var.location
-  resource_group_name = module.resource_group.name
-  os_type             = "Linux"
-  docker_username     = var.docker_username
-  docker_password     = var.docker_password
-  tags                = { environment = "dev" }
-}
-
-
-
-
-
