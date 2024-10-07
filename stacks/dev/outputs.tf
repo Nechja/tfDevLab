@@ -15,4 +15,9 @@ output "bastion_rdp_commands_windows" {
   ]
 }
 
-#az network bastion rdp --name bastion-dev --resource-group rg-dev-lab --target-resource-id /subscriptions/5d3830d7-948d-49ea-ac3a-d0cdeae0df21/resourceGroups/rg-dev-lab/providers/Microsoft.Compute/virtualMachines/win-dev-0
+output "bastion_ssh_commands_linux" {
+  description = "Commands to SSH into each Linux VM through Bastion"
+  value = [
+    "az network bastion ssh --name ${module.bastion.bastion_host_name} --resource-group ${module.resource_group.name} --target-resource-id ${module.linux_vm.vm_resource_ids[0]}"
+  ]
+}

@@ -34,7 +34,7 @@ module "nsg_dev_systems" {
       destination_address_prefix = "*"
     },
     {
-      name                       = "Allow-Linux-Container-To-Dev"
+      name                       = "Allow-Linux-To-Dev"
       priority                   = 1020
       direction                  = "Inbound"
       access                     = "Allow"
@@ -62,12 +62,12 @@ module "bastion" {
 
 module "nsg_linux_container" {
   source              = "../../modules/network_security_group"
-  name                = "nsg-linux-container"
+  name                = "nsg-linux-system"
   location            = var.location
   resource_group_name = module.resource_group.name
   security_rules = [
     {
-      name                       = "Allow-Dev-To-Linux-Container"
+      name                       = "Allow-Dev-To-Linux-System"
       priority                   = 1000
       direction                  = "Inbound"
       access                     = "Allow"
@@ -94,7 +94,7 @@ module "vnet" {
       network_security_group_id = module.nsg_dev_systems.id
     },
     {
-      name                      = "subnet-linux-container"
+      name                      = "subnet-linux-system"
       address_prefixes          = ["10.0.2.0/24"]
       network_security_group_id = module.nsg_linux_container.id
     }
@@ -125,7 +125,7 @@ module "linux_vm" {
   vm_name             = "linux-dev"
   location            = var.location
   resource_group_name = module.resource_group.name
-  subnet_id           = module.vnet.subnet_ids["subnet-linux-container"]
+  subnet_id           = module.vnet.subnet_ids["subnet-linux-system"]
   vm_size             = "Standard_B2s"
   publisher           = "Canonical"
   offer               = "0001-com-ubuntu-server-focal"
