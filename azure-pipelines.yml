@@ -30,6 +30,7 @@ stages:
           echo 'admin_password = "$(admin_password)"' >> $(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars
           echo 'docker_username = "$(docker_username)"' >> $(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars
           echo 'docker_password = "$(docker_password)"' >> $(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars
+          cat $(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars
 
 
     - task: TerraformCLI@2
@@ -42,8 +43,9 @@ stages:
       inputs:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/stacks/dev'
-        additionalArgs: '-out=tfplan -input=false -var-file=$(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars'
+        commandOptions: '-out=tfplan -input=false -var-file=$(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars'
         environmentServiceName: 'TestingGroup'
+
 
     - publish: '$(System.DefaultWorkingDirectory)/terraform/tfplan'
       artifact: tfplan
