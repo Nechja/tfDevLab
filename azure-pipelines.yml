@@ -46,8 +46,6 @@ stages:
         commandOptions: '-out=tfplan -input=false -var-file=$(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars'
         environmentServiceName: 'TestingGroup'
 
-
     - publish: '$(System.DefaultWorkingDirectory)/stacks/dev/tfplan'
       artifact: tfplan
-    - publish: '$(System.DefaultWorkingDirectory)/stacks/dev/terraform.tfstate'
-      artifact: tfstate
+
