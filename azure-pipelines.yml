@@ -7,6 +7,9 @@ stages:
   - job: TerraformPlan
     steps:
     - checkout: self
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: '1.5.0'
 
     - task: AzureCLI@2
       inputs:
@@ -29,16 +32,18 @@ stages:
           echo 'docker_password = "$(docker_password)"' >> $(System.DefaultWorkingDirectory)/stacks/dev/dev.tvars
 
 
-    - task: TerraformCLI@0
+    - task: TerraformCLI@2
       inputs:
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)stacks/dev'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/stacks/dev'
+        environmentServiceName: 'TestingGroup'
 
-    - task: TerraformCLI@0
+    - task: TerraformCLI@2
       inputs:
         command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)stacks/dev'
-        arguments: '-out=tfplan -input=false'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/stacks/dev'
+        additionalArgs: '-out=tfplan -input=false'
+        environmentServiceName: 'TestingGroup'
 
     - publish: '$(System.DefaultWorkingDirectory)/terraform/tfplan'
       artifact: tfplan
