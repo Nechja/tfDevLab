@@ -47,7 +47,7 @@ stages:
         environmentServiceName: 'TestingGroup'
 
 
-    - publish: '$(System.DefaultWorkingDirectory)/terraform/tfplan'
+    - publish: '$(System.DefaultWorkingDirectory)/stacks/dev/tfplan'
       artifact: tfplan
-    - publish: '$(System.DefaultWorkingDirectory)/terraform/terraform.tfstate'
+    - publish: '$(System.DefaultWorkingDirectory)/stacks/dev/terraform.tfstate'
       artifact: tfstate
